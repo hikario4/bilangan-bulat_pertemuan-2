@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Latihan Garis Bilangan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .number-line {
+      position: relative;
+      max-width: 700px;
+      height: 6px;
+      background: #0f766e;
+      margin: 40px auto 20px;
+      border-radius: 5px;
+    }
+
+    /* TANDA SATUAN (JARAK) */
+    .tick {
+      position: absolute;
+      top: -6px;
+      width: 2px;
+      height: 18px;
+      background: #064e3b;
+    }
+
+    .known-point {
+      position: absolute;
+      top: -18px;
+      width: 26px;
+      height: 26px;
+      background: #020617;
+      color: white;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 26px;
+      font-size: 0.85rem;
+      font-weight: bold;
+      transform: translateX(-50%);
+    }
+
+    .answer-point {
+      position: absolute;
+      top: -18px;
+      width: 26px;
+      height: 26px;
+      background: #06b6d4;
+      border-radius: 50%;
+      cursor: grab;
+      transform: translateX(-50%);
+      box-shadow: 0 0 12px rgba(6,182,212,0.8);
+    }
+
+    .petunjuk {
+      background: #ecfeff;
+      padding: 18px;
+      border-radius: 18px;
+      margin-bottom: 30px;
+    }
+
+    .soal {
+      margin-bottom: 60px;
+    }
+
+    .btn-selesai {
+      display: block;
+      margin: 40px auto;
+      padding: 14px 30px;
+      font-size: 1rem;
+      background: #0ea5e9;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+    }
+
+    .btn-selesai:hover {
+      background: #0284c7;
+    }
+
+    .pesan-selesai {
+      text-align: center;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #065f46;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Latihan Garis Bilangan</h1>
+  <p>Pilih 5 soal yang kamu anggap paling mudah</p>
+</header>
+
+<nav>
+  <a href="index.html">Beranda</a>
+  <a href="materi.html">Materi</a>
+  <a href="latihan.html">Latihan</a>
+</nav>
+
+<main>
+
+  <section class="petunjuk">
+    <h2>Petunjuk</h2>
+    <ol>
+      <li>Perhatikan angka yang diketahui.</li>
+      <li>Hitung langkah pada garis bilangan menggunakan tanda satuan.</li>
+      <li>Geser titik biru ke posisi jawaban.</li>
+      <li>Pilih dan kerjakan <strong>5 soal</strong>.</li>
+      <li>Tekan tombol <strong>Selesai Mengerjakan</strong>.</li>
+    </ol>
+  </section>
+
+  <section id="daftar-soal"></section>
+
+  <a href="hasil.html">
+  <button class="btn-selesai">
+    Selesai Mengerjakan
+  </button>
+</a>
+
+
+</main>
+
+<footer>
+  <p>&copy; 2025 | Pembelajaran Matematika SMP</p>
+</footer>
+
+<script>
+  const soal = [
+    { diketahui: 6, target: 9 },
+    { diketahui: 2, target: 5 },
+    { diketahui: -3, target: 1 },
+    { diketahui: 4, target: -2 },
+    { diketahui: 0, target: 3 },
+    { diketahui: -5, target: -1 },
+    { diketahui: 7, target: 4 },
+    { diketahui: -2, target: -6 },
+    { diketahui: 1, target: -3 },
+    { diketahui: 5, target: 8 }
+  ];
+
+  const container = document.getElementById("daftar-soal");
+
+  soal.forEach((s, i) => {
+    const soalDiv = document.createElement("div");
+    soalDiv.className = "soal";
+
+    soalDiv.innerHTML = `
+      <h3>Soal ${i + 1}</h3>
+      <p>Letakkan posisi angka <strong>${s.target}</strong> jika diketahui angka <strong>${s.diketahui}</strong>.</p>
+
+      <div class="number-line" id="line-${i}">
+        ${buatTick()}
+        <div class="known-point" style="left:50%">${s.diketahui}</div>
+        <div class="answer-point" id="point-${i}" style="left:50%"></div>
+      </div>
+    `;
+
+    container.appendChild(soalDiv);
+    dragPoint(i);
+  });
+
+  function buatTick() {
+    let ticks = "";
+    for (let i = 0; i <= 10; i++) {
+      ticks += `<div class="tick" style="left:${i * 10}%"></div>`;
+    }
+    return ticks;
+  }
+
+  function dragPoint(index) {
+    const point = document.getElementById(`point-${index}`);
+    const line = document.getElementById(`line-${index}`);
+
+    let dragging = false;
+
+    point.addEventListener("mousedown", () => dragging = true);
+    document.addEventListener("mouseup", () => dragging = false);
+
+    document.addEventListener("mousemove", e => {
+      if (!dragging) return;
+
+      const rect = line.getBoundingClientRect();
+      let x = e.clientX - rect.left;
+      x = Math.max(0, Math.min(x, rect.width));
+      point.style.left = `${(x / rect.width) * 100}%`;
+    });
+  }
+
+  function selesai() {
+    document.querySelectorAll(".answer-point").forEach(p => {
+      p.style.pointerEvents = "none";
+      p.style.opacity = "0.7";
+    });
+
+    document.getElementById("pesanSelesai").style.display = "block";
+  }
+</script>
+
+</body>
+</html>
